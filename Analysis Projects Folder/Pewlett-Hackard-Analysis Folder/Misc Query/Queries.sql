@@ -196,6 +196,8 @@ INNER JOIN departments AS d
 ON (de.dept_no = d.dept_no)
 WHERE (d.dept_no = 'd007');
 
+SELECT * FROM sales_retirees;
+
 -- Creating retiree list for Sales and Development departments
 
 SELECT ce.emp_no, ce.first_name, ce.last_name, d.dept_name
@@ -206,3 +208,43 @@ ON (ce.emp_no = de.emp_no)
 INNER JOIN departments AS d
 ON (de.dept_no = d.dept_no)
 WHERE d.dept_name IN ('Sales', 'Development');
+
+SELECT COUNT (emp_no), dept_name
+FROM sales_development_mentorship
+GROUP BY dept_name;
+
+SELECT * FROM sales_development_mentorship;
+
+
+-- Determine severance packages based on employee salaries
+
+DROP TABLE retiree_salaries;
+
+SELECT em.emp_no, 
+	em.first_name, 
+	em.last_name,
+	em.birth_date, 
+	de.dept_no,
+	de.from_date,
+	de.to_date,
+	s.salary,
+	d.dept_name
+INTO retiree_salaries
+FROM employees AS em
+INNER JOIN dept_emp AS de
+ON (em.emp_no = de.emp_no)
+INNER JOIN salaries AS s
+ON (de.emp_no = s.emp_no)
+INNER JOIN departments AS d
+ON (de.dept_no = d.dept_no)
+WHERE (de.to_date = '9999-01-01')
+AND (em.birth_date BETWEEN '1952-01-01' AND '1952-12-31')
+ORDER BY (emp_no);
+
+SELECT SUM(salary), dept_name
+-- INTO departmental_trainees
+FROM retiree_salaries
+GROUP BY dept_name
+ORDER BY SUM DESC;
+
+SELECT * FROM retiree_salaries;
